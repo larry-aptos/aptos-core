@@ -203,6 +203,7 @@ export interface Block {
   /** Chain ID informs us which chain we're trying to index, this is important to ensure that we're not mixing chains within a single pipeline. */
   chainId?: number | undefined;
   epoch?: number | undefined;
+  test?: number | undefined;
 }
 
 /**
@@ -1190,7 +1191,7 @@ export interface WriteOpSizeInfo {
 }
 
 function createBaseBlock(): Block {
-  return { timestamp: undefined, height: BigInt("0"), transactions: [], chainId: 0, epoch: 0 };
+  return { timestamp: undefined, height: BigInt("0"), transactions: [], chainId: 0, epoch: 0, test: 0 };
 }
 
 export const Block = {
@@ -1214,6 +1215,9 @@ export const Block = {
     }
     if (message.epoch !== undefined && message.epoch !== 0) {
       writer.uint32(40).uint32(message.epoch);
+    }
+    if (message.test !== undefined && message.test !== 0) {
+      writer.uint32(48).uint32(message.test);
     }
     return writer;
   },
@@ -1259,6 +1263,13 @@ export const Block = {
           }
 
           message.epoch = reader.uint32();
+          continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.test = reader.uint32();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1310,6 +1321,7 @@ export const Block = {
         : [],
       chainId: isSet(object.chainId) ? globalThis.Number(object.chainId) : 0,
       epoch: isSet(object.epoch) ? globalThis.Number(object.epoch) : 0,
+      test: isSet(object.test) ? globalThis.Number(object.test) : 0,
     };
   },
 
@@ -1330,6 +1342,9 @@ export const Block = {
     if (message.epoch !== undefined && message.epoch !== 0) {
       obj.epoch = Math.round(message.epoch);
     }
+    if (message.test !== undefined && message.test !== 0) {
+      obj.test = Math.round(message.test);
+    }
     return obj;
   },
 
@@ -1345,6 +1360,7 @@ export const Block = {
     message.transactions = object.transactions?.map((e) => Transaction.fromPartial(e)) || [];
     message.chainId = object.chainId ?? 0;
     message.epoch = object.epoch ?? 0;
+    message.test = object.test ?? 0;
     return message;
   },
 };
