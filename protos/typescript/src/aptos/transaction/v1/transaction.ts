@@ -203,6 +203,7 @@ export interface Block {
   /** Chain ID informs us which chain we're trying to index, this is important to ensure that we're not mixing chains within a single pipeline. */
   chainId?: number | undefined;
   epoch?: number | undefined;
+  sss?: bigint | undefined;
 }
 
 /**
@@ -1190,7 +1191,7 @@ export interface WriteOpSizeInfo {
 }
 
 function createBaseBlock(): Block {
-  return { timestamp: undefined, height: BigInt("0"), transactions: [], chainId: 0, epoch: 0 };
+  return { timestamp: undefined, height: BigInt("0"), transactions: [], chainId: 0, epoch: 0, sss: BigInt("0") };
 }
 
 export const Block = {
@@ -1214,6 +1215,12 @@ export const Block = {
     }
     if (message.epoch !== undefined && message.epoch !== 0) {
       writer.uint32(40).uint32(message.epoch);
+    }
+    if (message.sss !== undefined && message.sss !== BigInt("0")) {
+      if (BigInt.asUintN(64, message.sss) !== message.sss) {
+        throw new globalThis.Error("value provided for field message.sss of type uint64 too large");
+      }
+      writer.uint32(48).uint64(message.sss.toString());
     }
     return writer;
   },
@@ -1259,6 +1266,13 @@ export const Block = {
           }
 
           message.epoch = reader.uint32();
+          continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.sss = longToBigint(reader.uint64() as Long);
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -1310,6 +1324,7 @@ export const Block = {
         : [],
       chainId: isSet(object.chainId) ? globalThis.Number(object.chainId) : 0,
       epoch: isSet(object.epoch) ? globalThis.Number(object.epoch) : 0,
+      sss: isSet(object.sss) ? BigInt(object.sss) : BigInt("0"),
     };
   },
 
@@ -1330,6 +1345,9 @@ export const Block = {
     if (message.epoch !== undefined && message.epoch !== 0) {
       obj.epoch = Math.round(message.epoch);
     }
+    if (message.sss !== undefined && message.sss !== BigInt("0")) {
+      obj.sss = message.sss.toString();
+    }
     return obj;
   },
 
@@ -1345,6 +1363,7 @@ export const Block = {
     message.transactions = object.transactions?.map((e) => Transaction.fromPartial(e)) || [];
     message.chainId = object.chainId ?? 0;
     message.epoch = object.epoch ?? 0;
+    message.sss = object.sss ?? BigInt("0");
     return message;
   },
 };
