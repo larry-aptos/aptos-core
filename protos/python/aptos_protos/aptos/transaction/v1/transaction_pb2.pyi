@@ -60,17 +60,26 @@ MOVE_ABILITY_STORE: MoveAbility
 MOVE_ABILITY_KEY: MoveAbility
 
 class Block(_message.Message):
-    __slots__ = ["timestamp", "height", "transactions", "chain_id", "epoch"]
+    __slots__ = [
+        "timestamp",
+        "height",
+        "transactions",
+        "chain_id",
+        "epoch",
+        "block_height",
+    ]
     TIMESTAMP_FIELD_NUMBER: _ClassVar[int]
     HEIGHT_FIELD_NUMBER: _ClassVar[int]
     TRANSACTIONS_FIELD_NUMBER: _ClassVar[int]
     CHAIN_ID_FIELD_NUMBER: _ClassVar[int]
     EPOCH_FIELD_NUMBER: _ClassVar[int]
+    BLOCK_HEIGHT_FIELD_NUMBER: _ClassVar[int]
     timestamp: _timestamp_pb2.Timestamp
     height: int
     transactions: _containers.RepeatedCompositeFieldContainer[Transaction]
     chain_id: int
     epoch: int
+    block_height: int
     def __init__(
         self,
         timestamp: _Optional[_Union[_timestamp_pb2.Timestamp, _Mapping]] = ...,
@@ -78,6 +87,7 @@ class Block(_message.Message):
         transactions: _Optional[_Iterable[_Union[Transaction, _Mapping]]] = ...,
         chain_id: _Optional[int] = ...,
         epoch: _Optional[int] = ...,
+        block_height: _Optional[int] = ...,
     ) -> None: ...
 
 class Transaction(_message.Message):

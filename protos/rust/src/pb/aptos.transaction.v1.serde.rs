@@ -718,6 +718,9 @@ impl serde::Serialize for Block {
         if self.epoch != 0 {
             len += 1;
         }
+        if self.block_height != 0 {
+            len += 1;
+        }
         let mut struct_ser = serializer.serialize_struct("aptos.transaction.v1.Block", len)?;
         if let Some(v) = self.timestamp.as_ref() {
             struct_ser.serialize_field("timestamp", v)?;
@@ -733,6 +736,9 @@ impl serde::Serialize for Block {
         }
         if self.epoch != 0 {
             struct_ser.serialize_field("epoch", &self.epoch)?;
+        }
+        if self.block_height != 0 {
+            struct_ser.serialize_field("blockHeight", ToString::to_string(&self.block_height).as_str())?;
         }
         struct_ser.end()
     }
@@ -750,6 +756,8 @@ impl<'de> serde::Deserialize<'de> for Block {
             "chain_id",
             "chainId",
             "epoch",
+            "block_height",
+            "blockHeight",
         ];
 
         #[allow(clippy::enum_variant_names)]
@@ -759,6 +767,7 @@ impl<'de> serde::Deserialize<'de> for Block {
             Transactions,
             ChainId,
             Epoch,
+            BlockHeight,
         }
         impl<'de> serde::Deserialize<'de> for GeneratedField {
             fn deserialize<D>(deserializer: D) -> std::result::Result<GeneratedField, D::Error>
@@ -785,6 +794,7 @@ impl<'de> serde::Deserialize<'de> for Block {
                             "transactions" => Ok(GeneratedField::Transactions),
                             "chainId" | "chain_id" => Ok(GeneratedField::ChainId),
                             "epoch" => Ok(GeneratedField::Epoch),
+                            "blockHeight" | "block_height" => Ok(GeneratedField::BlockHeight),
                             _ => Err(serde::de::Error::unknown_field(value, FIELDS)),
                         }
                     }
@@ -809,6 +819,7 @@ impl<'de> serde::Deserialize<'de> for Block {
                 let mut transactions__ = None;
                 let mut chain_id__ = None;
                 let mut epoch__ = None;
+                let mut block_height__ = None;
                 while let Some(k) = map.next_key()? {
                     match k {
                         GeneratedField::Timestamp => {
@@ -847,6 +858,14 @@ impl<'de> serde::Deserialize<'de> for Block {
                                 Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
                             ;
                         }
+                        GeneratedField::BlockHeight => {
+                            if block_height__.is_some() {
+                                return Err(serde::de::Error::duplicate_field("blockHeight"));
+                            }
+                            block_height__ =
+                                Some(map.next_value::<::pbjson::private::NumberDeserialize<_>>()?.0)
+                            ;
+                        }
                     }
                 }
                 Ok(Block {
@@ -855,6 +874,7 @@ impl<'de> serde::Deserialize<'de> for Block {
                     transactions: transactions__.unwrap_or_default(),
                     chain_id: chain_id__.unwrap_or_default(),
                     epoch: epoch__.unwrap_or_default(),
+                    block_height: block_height__.unwrap_or_default(),
                 })
             }
         }
